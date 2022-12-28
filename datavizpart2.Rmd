@@ -1,0 +1,219 @@
+---
+title: "advanced data visualization part 2"
+author: "Michelle Gichuru"
+date: "2022-12-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE, 
+                      fig.width = 7, 
+                      dev = "ragg_png")
+options(scipen = 999)
+```
+
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(hrbrthemes)
+library(scales)
+library(ggtext)
+library(ragg)
+library(systemfonts)
+```
+
+
+```{r}
+  # system_fonts()%>%
+  #  View()
+```
+
+
+```{r}
+enrollment_by_race_ethnicity <- read_rds("data/enrollment-by-race-ethnicity.rds",refhook = NULL)
+```
+
+
+```{r}
+enrollment_by_race_ethnicity %>%
+  filter(ethnicity_race== "Hispanic Latino")%>%
+  pivot_wider(
+    id_cols = c(district_name,district_id), 
+    names_from = year,
+    values_from = proportion)%>%
+  mutate(growth = `2018-2019` -`2017-2018`)%>%
+  arrange(desc(growth))
+
+highest_district_growth <- enrollment_by_race_ethnicity%>%
+  filter(ethnicity_race== "Hispanic Latino")%>%
+  filter(district_name=="Douglas ESD")%>%
+  mutate(percent_display = percent(proportion,accuracy = 1))%>%
+  mutate(percent_display = case_when(
+    year=="2018-2019" ~ str_glue("{percent_display} growth in Hispanic Latino enrollment"), 
+    year=="2017-2018" ~ percent_display
+  ))
+```
+```{r customize theme}
+
+theme_njoks <- function(){
+  theme_minimal(
+    base_family = "Montserrat"
+  ) + theme(axis.title = element_blank(),
+                          panel.grid.minor = element_blank(),
+                          axis.text = element_text(family = "Montserrat",size=10))+ 
+  theme(plot.title = element_markdown()) 
+}
+```
+
+
+```{r}
+enrollment_by_race_ethnicity%>%
+  filter(ethnicity_race== "Hispanic Latino")%>%
+  ggplot(aes(x=year,y=proportion,group=district_name))+ 
+  geom_line(col ="#D3D3D3", 
+            alpha=0.5) + 
+  geom_line(data=highest_district_growth,
+            inherit.aes = TRUE,
+            col="#39FF14") + 
+  geom_text(data=highest_district_growth, 
+            inherit.aes = TRUE,
+            aes(label=percent_display),
+            nudge_x = c(-0.04,0.5),
+            family="Montserrat",
+            colour="#39FF14")+
+  scale_y_continuous(label=percent_format(),
+                     limits = c(0,1)) + 
+  labs(title = "<span style = color:#39FF14> Douglas ESD </span> had the <span style = color:#39FF14> highest Hispanic Latino enrollment</span> growth<br> from <span style = color:#39FF14 >2017-2018 to 2018-2019 </span>") + 
+  annotate("text", 
+          x=2.02,
+           y=.4,
+          label="Gray lines represent Hispanic Latino \nenrollment growth rates",
+            color="#D3D3D3",
+          family="Montserrat",
+          lineheight = 1,
+          hjust=0
+          ) + 
+  scale_x_discrete(expansion(mult =c(1,2))) + theme_njoks()
+```
+
+
+
+```{r}
+ggsave("myplot.png", device = agg_png, bg="white")
+```
+
+
+
+```{r}
+#https://www.listendata.com/2019/06/create-infographics-with-r.html
+# install.packages(c("waffle", "extrafont", "showtext","echarts4r"))
+library(waffle)
+library(extrafont)
+library(showtext)
+library(echarts4r)
+library(echarts4r.assets)
+```
+
+
+```{r}
+#https://github.com/FortAwesome/Font-Awesome/tree/master/webfonts
+waffle(
+  c('Yes=70%' = 70, 'No=30%' = 30), rows = 10, colors = c("#FD6F6F", "#93FB98"),
+  title = 'Responses', legend_pos="bottom"
+)
+```
+
+
+```{r}
+# import fonts
+extrafont::font_import (path="C:\\Users\\hp\\Downloads", pattern = "fa-", prompt =  FALSE)
+
+# load fonts
+loadfonts(device = "win")
+```
+
+```{r}
+# confirm font is loaded
+# extrafont::fonttable() %>%
+#   dplyr::as_tibble() %>%
+#   dplyr::filter(grepl("Awesom",  FamilyName)) %>%
+#   select( FamilyName, FontName, fontfile)
+```
+
+
+```{r}
+# library(showtext)
+font_add(family = "FontAwesome5Free-Solid", regular = "C:\\Users\\hp\\Downloads\\fa-solid-900.ttf")
+font_add(family = "FontAwesome5Free-Regular", regular = "C:\\Users\\hp\\Downloads\\fa-regular-400.ttf")
+font_add(family = "FontAwesome5Brands-Regular", regular = "C:\\Users\\hp\\Downloads\\fa-brands-400.ttf")
+showtext_auto()
+```
+
+
+```{r}
+# waffle(
+#   c(`Poor=10` =10, `Average=18` = 18, `Excellent=7` =7), rows = 5, colors = c("#FD6F6F", "#93FB98", "#D5D9DD"),
+#   use_glyph = "female", glyph_size = 12 ,glyph_font = "Font Awesome 5 Free Solid",glyph_font_family = "FontAwesome5Free-Solid",title = 'Girls Performance', legend_pos="bottom"
+# )
+```
+
+
+```{r}
+waffle(c(50, 30, 15, 5), rows = 5, use_glyph = "child", glyph_size = 6, 
+title = "Look I made an infographic using R!")
+```
+
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+

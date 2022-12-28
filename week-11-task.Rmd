@@ -1,0 +1,54 @@
+---
+title: "week11"
+author: "Michelle Gichuru"
+date: "2022-12-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,warning=FALSE)
+```
+
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(ggtext)
+library(hrbrthemes)
+```
+
+
+
+```{r}
+penguins <-read_csv("penguins.csv")
+```
+
+
+
+```{r}
+penguins%>%
+  select(species,body_mass_g,sex) %>%
+  filter(!is.na(species))%>%
+  filter(!is.na(body_mass_g))%>%
+  filter(!is.na(sex))%>%
+  group_by(species,sex)%>%
+  summarise(mean_g = mean(body_mass_g))%>%
+  ggplot(aes(x=species, y=mean_g,fill=factor(species))) + 
+  geom_col() + labs(title="Regardless of gender <span style = color:#BE95C4> Gentoo species </span> have the **highest** <br> body mass",y="Mean body mass in grams",x="") +
+  scale_fill_manual(values = c("#5E548E", "#9F86C0", "#BE95C4", "#E0B1CB")) +
+  facet_grid(~sex) +
+  theme_minimal() + theme(plot.title = element_markdown())
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
